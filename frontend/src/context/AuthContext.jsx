@@ -4,7 +4,7 @@ import axios from "axios";
 export const authDataContext = createContext();
 
 function AuthContext({ children }) {
-  const serverUrl = "http://localhost:8000";
+  const serverUrl = "https://health-prediction-and-recommendation-8bqr.onrender.com";
 
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
