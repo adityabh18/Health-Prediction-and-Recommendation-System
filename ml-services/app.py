@@ -16,7 +16,7 @@ CORS(app)
 # 1. LOAD RECOMMENDATION CSV
 # =============================================
 
-recommendation_df = pd.read_csv("recommen.csv")
+recommendation_df = pd.read_csv("../recommen.csv")
 
 recommendation_df.columns = recommendation_df.columns.str.strip()
 
