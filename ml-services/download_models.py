@@ -17,7 +17,7 @@ files = {
     "1dCeFJRJ5YNuX4nvTJ_eWDkF0FnSrksgq": "models/kidney_model.pkl",
 
     "1SlDSg2tJJZl1xw2EIAGBQ1AUMcRFqcoV": "models/tfidf_vectorizer.pkl",
-    "17K_K282k5uERLhxMaNrufNRsKUhwPLmx": "models/recommen.csv",
+    "17K_K282k5uERLhxMaNrufNRsKUhwPLmx": "recommen.csv",
 }
 
 # download all files
