@@ -3,6 +3,7 @@
 # Models: General Disease, Heart, Diabetes, Kidney
 # =============================================
 
+import os
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import pickle
@@ -16,7 +17,10 @@ CORS(app)
 # 1. LOAD RECOMMENDATION CSV
 # =============================================
 
-recommendation_df = pd.read_csv("../recommen.csv")
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+csv_path = os.path.join(BASE_DIR, "recommen.csv")
+
+recommendation_df = pd.read_csv(csv_path)
 
 recommendation_df.columns = recommendation_df.columns.str.strip()
 
