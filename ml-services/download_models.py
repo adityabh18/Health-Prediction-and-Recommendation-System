@@ -7,7 +7,7 @@ os.makedirs("models", exist_ok=True)
 # Google Drive FILE_ID : save path
 files = {
     "1k2t4zNcP_PzJtq8zzHiSnJ4LOrcvneli": "models/diabetes_binary_health_indicators_BRFSS2015.csv",
-    "1s2bpLyzVNZzTzbvy3GzXvCa-xkwob1a5": "models/diabetes_model1.pkl",
+    "1fxmC1377r_s-gDZfMiHozkXCAm6Yl_O9": "models/diabetes_model1.pkl",
     "1FCksEcTy2GiGKYZ1leWIoiwDYyl56fsT": "models/general_model.pkl",
     "1ZBgvzM-8TdsMiHEjxgXkDXuDko6jocRb": "models/heart_2022_no_nans.csv",
     "1s2bpLyzVNZzTzbvy3GzXvCa-xkwob1a5": "models/heart_model1.pkl",
