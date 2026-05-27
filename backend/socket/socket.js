@@ -7,7 +7,7 @@ const userSocketMap = new Map();
 export const initSocket = (server) => {
   const io = new Server(server, {
     cors: {
-      origin: "http://localhost:5173",
+      origin: "https://health-prediction-and-recommendation.onrender.com",
       credentials: true,
       methods: ["GET", "POST"],
     },
