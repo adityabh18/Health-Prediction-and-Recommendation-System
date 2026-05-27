@@ -98,7 +98,7 @@ const handalSignup = async (e) => {
     }
 
   } catch (error) {
-
+    console.log(error.response.data);
     console.log(error);
 
   }

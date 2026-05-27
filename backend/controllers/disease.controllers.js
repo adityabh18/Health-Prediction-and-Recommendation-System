@@ -168,7 +168,8 @@ export const predictHeartDisease = async (req, res) => {
     );
 
     res.status(500).json({
-      message: "Server error in heart disease prediction"
+      message: `Server error in heart disease prediction ${error.message}`,
+      error:error
     });
   }
 };
