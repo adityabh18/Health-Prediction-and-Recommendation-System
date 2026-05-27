@@ -71,7 +71,7 @@ function Appointments() {
   return (
     <div className="w-full min-h-screen px-4 py-10 bg-gradient-to-r from-emerald-50 via-white to-emerald-100">
       {/* Heading */}
-      <h2 className="text-3xl font-semibold text-center mb-10 text-gray-800">
+      <h2 className="text-3xl font-semibold text-center mb-10 text-emerald-700">
         {user?.role === "doctor" ? "Doctor Appointments" : "My Appointments"}
       </h2>
 

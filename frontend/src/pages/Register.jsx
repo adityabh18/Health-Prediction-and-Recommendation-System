@@ -2,176 +2,191 @@ import React, { useState } from "react";
 import { FaUser, FaEnvelope, FaLock, FaUserTag } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../assets/logo.png";
-import google from "../assets/google.svg"
+import google from "../assets/google.svg";
 import { useContext } from "react";
 import { authDataContext } from "../context/AuthContext";
-import axios from "axios"
+import axios from "axios";
 import { userDataContext } from "../context/UserContext";
 import { signInWithPopup } from "firebase/auth";
 import { auth, provider } from "../utils/googleLogin.js";
 import { toast } from "react-toastify";
 
 function Register() {
-  const [username,setUsername]=useState("");
-  const [email,setEmail]=useState("");
-  const [password,setPassword]=useState("");
-  const [role,setRole]=useState("user");
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [role, setRole] = useState("user");
+  const [usernameError, setUsernameError] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
 
-  const {serverUrl}=useContext(authDataContext);
-  const {getCurrentUser}=useContext(userDataContext)
+  const { serverUrl } = useContext(authDataContext);
+  const { getCurrentUser } = useContext(userDataContext);
 
   const navigate = useNavigate();
 
   const validateForm = () => {
-  if (!username.trim()) {
-    toast.error("Username is required");
-    return false;
-  }
+    setUsernameError("");
+    setEmailError("");
+    setPasswordError("");
 
-  if (!email.trim()) {
-    toast.error("Email is required");
-    return false;
-  }
+    if (!username.trim()) {
+      setUsernameError("Username is required");
+      return false;
+    }
 
-  // email validation
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(email)) {
-    toast.error("Please enter a valid email");
-    return false;
-  }
+    if (!email.trim()) {
+      setEmailError("Email is required");
+      return false;
+    }
 
-  if (!password) {
-    toast.error("Password is required");
-    return false;
-  }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-  if (password.length < 6) {
-    toast.error("Password must be at least 6 characters");
-    return false;
-  }
+    if (!emailRegex.test(email)) {
+      setEmailError("Please enter a valid email");
+      return false;
+    }
 
-  return true;
-};
+    if (!password) {
+      setPasswordError("Password is required");
+      return false;
+    }
 
+    if (password.length < 6) {
+      setPasswordError("Password must be at least 6 characters");
+      return false;
+    }
+
+    return true;
+  };
 
   /**
- * @description Normal Signup function
- */
-const handalSignup = async (e) => {
-  e.preventDefault();
+   * @description Normal Signup function
+   */
+  const handalSignup = async (e) => {
+    e.preventDefault();
 
-  if (!validateForm()) return;
+    if (!validateForm()) return;
 
-  try {
+    try {
+      const result = await axios.post(
+        serverUrl + "/api/auth/register",
+        {
+          username,
+          email,
+          password,
+          role,
+        },
+        {
+          withCredentials: true,
+        },
+      );
 
-    const result = await axios.post(
-      serverUrl + "/api/auth/register",
-      {
-        username,
-        email,
-        password,
-        role,
-      },
-      {
-        withCredentials: true,
+      console.log(result.data);
+
+      toast.success("Registration successful 🎉");
+
+      // ✅ current user fetch
+      await getCurrentUser();
+
+      const user = result.data.user;
+
+      // ✅ role based navigation
+      if (user.role === "doctor") {
+        navigate("/doctor-dashboard");
+      } else {
+        navigate("/user-dashboard");
       }
-    );
+    } catch (error) {
+      console.log(error.response.data);
+      console.log(error);
 
-    console.log(result.data);
+      const msg = error?.response?.data?.message;
 
-     toast.success("Registration successful 🎉");
-
-    // ✅ current user fetch
-    await getCurrentUser();
-
-    const user = result.data.user;
-
-    // ✅ role based navigation
-    if (user.role === "doctor") {
-
-      navigate("/doctor-dashboard");
-
-    } else {
-
-      navigate("/user-dashboard");
-
+      if (msg) {
+        if (msg.toLowerCase().includes("email")) {
+          setEmailError(msg);
+        } else if (msg.toLowerCase().includes("password")) {
+          setPasswordError(msg);
+        } else if (msg.toLowerCase().includes("username")) {
+          setUsernameError(msg);
+        } else {
+          setEmailError(msg);
+        }
+      } else {
+        toast.error("Registration failed ❌");
+      }
     }
+  };
 
-  } catch (error) {
-    console.log(error.response.data);
-    console.log(error);
+  /**
+   * @description Google Signup function
+   */
+  const googleSignup = async () => {
+    try {
+      const response = await signInWithPopup(auth, provider);
 
-  }
-};
+      const user = response.user;
 
-/**
- * @description Google Signup function
- */
-const googleSignup = async () => {
+      const result = await axios.post(
+        serverUrl + "/api/auth/googlelogin",
 
-  try {
-
-    const response = await signInWithPopup(auth, provider);
-
-    const user = response.user;
-
-    const result = await axios.post(
-
-      serverUrl + "/api/auth/googlelogin",
-
-      {
-        name: user.displayName,
-        email: user.email,
-        photo: user.photoURL,
-      },
-
-      {
-        withCredentials: true,
-      }
-
-    );
-
-    // ✅ NEW USER -> ROLE SELECT PAGE
-    if (result.data.needRole) {
-
-      navigate("/select-role", {
-        state: {
+        {
           name: user.displayName,
           email: user.email,
+          photo: user.photoURL,
         },
-      });
 
-      return;
+        {
+          withCredentials: true,
+        },
+      );
+
+      // ✅ NEW USER -> ROLE SELECT PAGE
+      if (result.data.needRole) {
+        navigate("/select-role", {
+          state: {
+            name: user.displayName,
+            email: user.email,
+          },
+        });
+
+        return;
+      }
+
+      // ✅ Existing user
+      await getCurrentUser();
+
+      const role = result.data.user?.role;
+
+      // ✅ role based navigation
+      if (role === "doctor") {
+        navigate("/doctor-dashboard");
+      } else {
+        navigate("/user-dashboard");
+      }
+    } catch (error) {
+      console.log(error);
+
+      if (error?.code === "auth/popup-closed-by-user") {
+        toast.error("Signup cancelled ❌");
+      } else if (error?.code === "auth/network-request-failed") {
+        toast.error("Network error. Try again");
+      } else {
+        const msg = error?.response?.data?.message;
+
+        toast.error(msg || "Google signup failed ❌");
+      }
     }
-
-    // ✅ Existing user
-    await getCurrentUser();
-
-    const role = result.data.user?.role;
-
-    // ✅ role based navigation
-    if (role === "doctor") {
-
-      navigate("/doctor-dashboard");
-
-    } else {
-
-      navigate("/user-dashboard");
-
-    }
-
-  } catch (error) {
-
-    console.log(error);
-
-  }
-};
-
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-emerald-50 via-emerald-100 to-teal-200">
       {/* LOGO */}
-      <Link to="/" className="absolute top-6 left-8 flex items-center gap-3">
+      <Link
+        to="/"
+        className="absolute top-3 sm:top-5 left-1/2 -translate-x-1/2 md:left-8 md:translate-x-0 flex items-center gap-2 z-10"
+      >
         <img src={logo} alt="logo" className="w-14 h-14" />
 
         <h1 className="text-3xl font-bold text-emerald-700 hover:text-emerald-800 transition">
@@ -179,9 +194,9 @@ const googleSignup = async () => {
         </h1>
       </Link>
 
-      <div className="flex justify-center items-center min-h-screen">
+      <div className="flex justify-center items-center min-h-screen pt-20 sm:pt-24 md:pt-0 px-4">
         <div
-          className="bg-white p-8 rounded-3xl shadow-lg w-[380px]
+          className="bg-white p-6 sm:p-8 rounded-3xl shadow-lg w-full max-w-[420px]
         border border-transparent hover:border-emerald-400 
         hover:shadow-2xl hover:-translate-y-2 transition-all duration-300"
         >
@@ -194,13 +209,11 @@ const googleSignup = async () => {
           </p>
 
           {/* GOOGLE LOGIN */}
-          <button className="w-full flex items-center justify-center gap-2 border border-gray-300 py-2 rounded-full hover:bg-gray-50 transition mb-4 cursor-pointer"
-          onClick={googleSignup}>
-            <img
-              src={google}
-              alt="google"
-              className="w-5 h-5"
-            />
+          <button
+            className="w-full flex items-center justify-center gap-2 border border-gray-300 py-2 rounded-full hover:bg-gray-50 transition mb-4 cursor-pointer"
+            onClick={googleSignup}
+          >
+            <img src={google} alt="google" className="w-5 h-5" />
             Register with Google
           </button>
 
@@ -218,14 +231,24 @@ const googleSignup = async () => {
 
               <div className="flex items-center bg-emerald-50 rounded-full px-4 py-2 shadow-sm mt-1">
                 <FaUser className="text-emerald-600 mr-3" />
+
                 <input
                   type="text"
                   name="username"
                   placeholder="Enter your name"
-                  onChange={(e)=>setUsername(e.target.value)}
+                  onChange={(e) => {
+                    setUsername(e.target.value);
+                    setUsernameError("");
+                  }}
                   className="bg-transparent w-full outline-none"
                 />
               </div>
+
+              {usernameError && (
+                <p className="text-red-500 text-sm mt-1 ml-2">
+                  {usernameError}
+                </p>
+              )}
             </div>
 
             {/* EMAIL */}
@@ -238,10 +261,13 @@ const googleSignup = async () => {
                   type="email"
                   name="email"
                   placeholder="example@gmail.com"
-                  onChange={(e)=>setEmail(e.target.value)}
+                  onChange={(e) => setEmail(e.target.value)}
                   className="bg-transparent w-full outline-none"
                 />
               </div>
+              {emailError && (
+                <p className="text-red-500 text-sm mt-1 ml-2">{emailError}</p>
+              )}
             </div>
 
             {/* PASSWORD */}
@@ -254,10 +280,15 @@ const googleSignup = async () => {
                   type="password"
                   name="password"
                   placeholder="Enter password"
-                  onChange={(e)=>setPassword(e.target.value)}
+                  onChange={(e) => setPassword(e.target.value)}
                   className="bg-transparent w-full outline-none"
                 />
               </div>
+              {passwordError && (
+                <p className="text-red-500 text-sm mt-1 ml-2">
+                  {passwordError}
+                </p>
+              )}
             </div>
 
             {/* ROLE */}
@@ -268,7 +299,7 @@ const googleSignup = async () => {
                 <FaUserTag className="text-emerald-600 mr-3" />
                 <select
                   name="role"
-                  onChange={(e)=>setRole(e.target.value)}
+                  onChange={(e) => setRole(e.target.value)}
                   className="bg-transparent w-full outline-none"
                 >
                   <option value="user">Patient</option>
@@ -278,8 +309,6 @@ const googleSignup = async () => {
             </div>
 
             <button
-
-            
               className="w-full px-7 py-3 rounded-full text-white font-medium
   bg-gradient-to-r from-emerald-500 via-green-500 to-emerald-600
   shadow-md shadow-emerald-200 hover:shadow-lg hover:shadow-emerald-300

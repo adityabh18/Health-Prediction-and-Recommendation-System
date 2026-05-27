@@ -37,7 +37,7 @@ function HighRiskPatients() {
     <div className="max-w-[900px] mx-auto">
 
       {/* Heading */}
-      <h2 className="text-3xl font-semibold text-center text-gray-800">
+      <h2 className="text-3xl font-semibold text-center text-emerald-700">
         High Risk Patients
       </h2>
 

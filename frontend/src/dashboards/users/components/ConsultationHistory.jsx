@@ -84,7 +84,7 @@ function ConsultationHistory() {
 
         <div className="text-center mb-10">
 
-          <h2 className="text-3xl font-semibold text-gray-800">
+          <h2 className="text-3xl font-semibold text-emerald-700">
 
             Consultation History
 

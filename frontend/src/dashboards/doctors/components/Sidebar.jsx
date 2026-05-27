@@ -36,7 +36,7 @@ function Sidebar({ activeTab, setActiveTab, sidebarOpen, setSidebarOpen }) {
           top-0 md:top-16
           left-0
           w-64
-          h-screen
+          h-screen md:h-[calc(100vh-64px)]
           bg-white
           shadow-lg
           p-6
@@ -117,7 +117,7 @@ function Sidebar({ activeTab, setActiveTab, sidebarOpen, setSidebarOpen }) {
         </div>
 
         {/* LOGOUT */}
-        <div className="mt-auto pt-4 mb-20">
+        <div className="mt-auto pt-6 pb-4 md:pb-2">
           <button
             onClick={() => navigate("/signin")}
             className="w-full px-6 py-3 rounded-full text-white

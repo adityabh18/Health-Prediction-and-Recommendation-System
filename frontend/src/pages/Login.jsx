@@ -13,25 +13,31 @@ import { toast } from "react-toastify";
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
 
   const { serverUrl } = useContext(authDataContext);
   const { getCurrentUser } = useContext(userDataContext);
 
   const navigate = useNavigate();
   const validateLogin = () => {
+    setEmailError("");
+    setPasswordError("");
+
     if (!email.trim()) {
-      toast.error("Email is required");
+      setEmailError("Email is required");
       return false;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
     if (!emailRegex.test(email)) {
-      toast.error("Please enter a valid email");
+      setEmailError("Please enter a valid email");
       return false;
     }
 
     if (!password) {
-      toast.error("Password is required");
+      setPasswordError("Password is required");
       return false;
     }
 
@@ -71,15 +77,19 @@ function Login() {
 
       if (msg) {
         // smart messages from backend
-        if (msg.toLowerCase().includes("password")) {
-          toast.error("Incorrect password ❌");
-        } else if (
-          msg.toLowerCase().includes("email") ||
-          msg.toLowerCase().includes("user")
-        ) {
-          toast.error("User not found ❌");
+        if (msg) {
+          if (msg.toLowerCase().includes("password")) {
+            setPasswordError("Incorrect password");
+          } else if (
+            msg.toLowerCase().includes("email") ||
+            msg.toLowerCase().includes("user")
+          ) {
+            setEmailError("User not found");
+          } else {
+            setEmailError(msg);
+          }
         } else {
-          toast.error(msg);
+          setEmailError("Login failed. Please try again");
         }
       } else {
         toast.error("Login failed. Please try again");
@@ -111,7 +121,6 @@ function Login() {
 
       // ================= ROLE NOT SET =================
       if (data.needRole) {
-
         toast.info("Please select your role to continue");
 
         navigate("/select-role", {
@@ -124,7 +133,7 @@ function Login() {
       }
 
       // ================= LOGIN COMPLETE =================
-       toast.success("Google login successful 🎉");
+      toast.success("Google login successful 🎉");
 
       await getCurrentUser();
 
@@ -139,16 +148,14 @@ function Login() {
     } catch (error) {
       console.log(error);
       if (error?.code === "auth/popup-closed-by-user") {
-      toast.error("Login cancelled ❌");
-    } 
-    else if (error?.code === "auth/network-request-failed") {
-      toast.error("Network error. Try again");
-    } 
-    else {
-      // backend / axios error
-      const msg = error?.response?.data?.message;
-      toast.error(msg || "Google login failed ❌");
-    }
+        toast.error("Login cancelled ❌");
+      } else if (error?.code === "auth/network-request-failed") {
+        toast.error("Network error. Try again");
+      } else {
+        // backend / axios error
+        const msg = error?.response?.data?.message;
+        toast.error(msg || "Google login failed ❌");
+      }
     }
   };
 
@@ -198,14 +205,22 @@ function Login() {
 
               <div className="flex items-center bg-emerald-50 rounded-full px-4 py-2 shadow-sm mt-1">
                 <FaEnvelope className="text-emerald-600 mr-3" />
+
                 <input
                   type="email"
                   name="email"
                   placeholder="example@gmail.com"
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    setEmailError("");
+                  }}
                   className="bg-transparent w-full outline-none"
                 />
               </div>
+
+              {emailError && (
+                <p className="text-red-500 text-sm mt-1 ml-2">{emailError}</p>
+              )}
             </div>
 
             {/* PASSWORD */}
@@ -214,14 +229,24 @@ function Login() {
 
               <div className="flex items-center bg-emerald-50 rounded-full px-4 py-2 shadow-sm mt-1">
                 <FaLock className="text-emerald-600 mr-3" />
+
                 <input
                   type="password"
                   name="password"
                   placeholder="Enter password"
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    setPasswordError("");
+                  }}
                   className="bg-transparent w-full outline-none"
                 />
               </div>
+
+              {passwordError && (
+                <p className="text-red-500 text-sm mt-1 ml-2">
+                  {passwordError}
+                </p>
+              )}
             </div>
 
             <button

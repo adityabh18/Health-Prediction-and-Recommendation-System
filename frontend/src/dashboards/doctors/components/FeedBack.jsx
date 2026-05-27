@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 import { authDataContext } from "../../../context/AuthContext";
 
 function Feedback() {
-
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(false);
@@ -21,42 +20,29 @@ function Feedback() {
   const [rating, setRating] = useState("");
 
   useEffect(() => {
-
     const fetchUser = async () => {
-
       try {
-
-        const res = await axios.get(
-          `${serverUrl}/api/user/current-user`,
-          {
-            withCredentials: true,
-          }
-        );
+        const res = await axios.get(`${serverUrl}/api/user/current-user`, {
+          withCredentials: true,
+        });
 
         setCurrentUser(res.data);
-
       } catch (error) {
-
         console.log(error);
       }
     };
 
     fetchUser();
-
   }, [serverUrl]);
 
-
   const handleSubmit = async () => {
-
     if (!newFeedback.trim() || !rating) {
-
       toast.error("Please enter feedback and rating!");
 
       return;
     }
 
     try {
-
       setLoading(true);
 
       await axios.post(
@@ -64,14 +50,8 @@ function Feedback() {
         {
           name:
             currentUser?.role === "doctor"
-              ? `Dr. ${
-                  currentUser?.name ||
-                  currentUser?.username ||
-                  "Doctor"
-                }`
-              : currentUser?.name ||
-                currentUser?.username ||
-                "User",
+              ? `Dr. ${currentUser?.name || currentUser?.username || "Doctor"}`
+              : currentUser?.name || currentUser?.username || "User",
 
           email: currentUser?.email,
 
@@ -81,33 +61,22 @@ function Feedback() {
         },
         {
           withCredentials: true,
-        }
+        },
       );
 
-
       const feedbackObj = {
-
         id: Date.now(),
 
         name:
           currentUser?.role === "doctor"
-            ? `Dr. ${
-                currentUser?.name ||
-                currentUser?.username ||
-                "Doctor"
-              }`
-            : currentUser?.name ||
-              currentUser?.username ||
-              "User",
+            ? `Dr. ${currentUser?.name || currentUser?.username || "Doctor"}`
+            : currentUser?.name || currentUser?.username || "User",
 
         image:
           currentUser?.image ||
           "https://cdn-icons-png.flaticon.com/512/149/149071.png",
 
-        role:
-          currentUser?.role === "doctor"
-            ? "Doctor"
-            : "Patient",
+        role: currentUser?.role === "doctor" ? "Doctor" : "Patient",
 
         text: newFeedback,
 
@@ -119,39 +88,29 @@ function Feedback() {
       toast.success("Feedback submitted successfully!");
 
       setNewFeedback("");
-
       setRating("");
 
-      setTimeout(() => {
+      // loading ko turant false karo
+      setLoading(false);
 
-        if (currentUser?.role === "doctor") {
-
-          navigate("/doctor-dashboard");
-
-        } else {
-
-          navigate("/user-dashboard");
-        }
-
-      }, 1000);
-
+      // instant navigation
+      if (currentUser?.role === "doctor") {
+        navigate("/doctor-dashboard");
+      } else {
+        navigate("/user-dashboard");
+      }
     } catch (error) {
-
       console.log(error);
 
       toast.error("Failed to send feedback");
-
     } finally {
-
       setLoading(false);
     }
   };
 
   return (
-
     <div className="max-w-2xl mx-auto flex flex-col gap-6">
-
-      <h2 className="text-2xl font-bold mb-2 text-center">
+      <h2 className="text-2xl font-bold mb-2 text-center text-emerald-700">
         Give Feedback
       </h2>
 
@@ -165,30 +124,25 @@ function Feedback() {
           hover:shadow-xl hover:-translate-y-1
         "
       >
-
         {/* TEXTAREA */}
 
         <div className="flex bg-emerald-50 rounded-2xl px-4 py-4 shadow-sm min-h-[160px]">
-
           <textarea
             placeholder="Share your feedback about the platform..."
             className="bg-transparent w-full outline-none text-sm resize-none"
             value={newFeedback}
             onChange={(e) => setNewFeedback(e.target.value)}
           />
-
         </div>
 
         {/* RATING */}
 
         <div className="flex items-center bg-emerald-50 rounded-full px-4 py-3 shadow-sm w-44">
-
           <select
             className="bg-transparent w-full outline-none text-sm"
             value={rating}
             onChange={(e) => setRating(e.target.value)}
           >
-
             <option value="">Select Rating</option>
 
             <option value="★">★</option>
@@ -200,9 +154,7 @@ function Feedback() {
             <option value="★★★★">★★★★</option>
 
             <option value="★★★★★">★★★★★</option>
-
           </select>
-
         </div>
 
         {/* BUTTON */}
@@ -210,25 +162,25 @@ function Feedback() {
         <button
           onClick={handleSubmit}
           disabled={loading}
-          className="
-            px-6 py-3 w-full rounded-full text-white font-medium
-            bg-gradient-to-r from-emerald-500 via-green-500 to-emerald-600
-            hover:shadow-lg transition-all duration-300
-          "
+          className={`
+    px-6 py-3 w-full rounded-full text-white font-medium
+    bg-gradient-to-r from-emerald-500 via-green-500 to-emerald-600
+    transition-all duration-300
+    ${
+      loading
+        ? "opacity-70 cursor-not-allowed"
+        : "hover:shadow-lg hover:-translate-y-1"
+    }
+  `}
         >
-
           {loading ? "Submitting..." : "Submit Feedback"}
-
         </button>
-
       </div>
 
       {/* FEEDBACK LIST */}
 
       <div className="flex flex-col gap-4">
-
         {userFeedbacks.map((fb) => (
-
           <div
             key={fb.id}
             className="
@@ -238,7 +190,6 @@ function Feedback() {
               hover:shadow-xl hover:-translate-y-1
             "
           >
-
             <img
               src={fb.image}
               alt={fb.name}
@@ -246,31 +197,17 @@ function Feedback() {
             />
 
             <div>
+              <p className="font-semibold">{fb.name}</p>
 
-              <p className="font-semibold">
-                {fb.name}
-              </p>
+              <p className="text-gray-500 text-sm">{fb.role}</p>
 
-              <p className="text-gray-500 text-sm">
-                {fb.role}
-              </p>
+              <p className="italic mt-1">"{fb.text}"</p>
 
-              <p className="italic mt-1">
-                "{fb.text}"
-              </p>
-
-              <p className="text-yellow-500 mt-1">
-                {fb.rating}
-              </p>
-
+              <p className="text-yellow-500 mt-1">{fb.rating}</p>
             </div>
-
           </div>
-
         ))}
-
       </div>
-
     </div>
   );
 }
