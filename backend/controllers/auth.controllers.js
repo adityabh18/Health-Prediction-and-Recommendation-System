@@ -86,7 +86,7 @@ export const registration = async (req, res) => {
      */
 res.cookie("token", token, {
   httpOnly: true,
-  sameSite: "None",
+  sameSite: "none",
   secure: true,
 });
 
@@ -223,11 +223,11 @@ export const googleLogin = async (req, res) => {
       { expiresIn: "1d" },
     );
 
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: false,
-      sameSite: "lax",
-    });
+   res.cookie("token", token, {
+  httpOnly: true,
+  secure: true,
+  sameSite: "none",
+});
 
     return res.status(200).json({
       success: true,
@@ -267,10 +267,10 @@ export const setRole = async (req, res) => {
     );
 
     res.cookie("token", token, {
-      httpOnly: true,
-      secure: false,
-      sameSite: "lax",
-    });
+  httpOnly: true,
+  secure: true,
+  sameSite: "none",
+});
 
     return res.status(200).json({
       message: "Role set successfully",
