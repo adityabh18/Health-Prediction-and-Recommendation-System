@@ -46,12 +46,17 @@ export const predictGeneralDesease=async (req,res)=>{
          * @description return result to frontend
          */
         res.status(200).json(AI_response.data)
-    } catch (error) {
-        console.error(error)
-        res.status(500).json({
-            message:"Server error in general disease prediction"
-        })
-    }
+    }} catch (error) {
+
+    console.error(
+      "General disease prediction error:",
+      error.response?.data || error.message
+    );
+
+    res.status(500).json({
+      message: error.response?.data || error.message
+    });
+}
 }
 
 /**
