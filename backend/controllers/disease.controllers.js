@@ -8,55 +8,51 @@ const mlServer="https://health-prediction-and-recommendation-35bk.onrender.com"
  * @route POST /api/general-desease
  * @access Public
  */
-export const predictGeneralDesease = async (req, res) => {
-  try {
+export const predictGeneralDesease=async (req,res)=>{
+    try {
+        const userId = req.user.id;
+        const { text } = req.body;
+        
+        if(!text||text.length<10){
+           return res.status(400).json({
+            message:"Please enter at least 10 charactes"
+           })
+        }
 
-    const userId = req.user?.id || null;
-    const { text } = req.body;
+        /**
+         * @description API call to ML server
+         */
 
-    if (!text || text.length < 10) {
-      return res.status(400).json({
-        message: "Please enter at least 10 characters"
-      });
+        const AI_response=await axios.post(mlServer+"/predict-general",
+            {text}
+        );
+
+        const {predictedDisease,riskLevel,localName,confidence,recommendations}=AI_response.data
+
+        /**
+         * @description to save data in mongoodb
+         */
+        const result=await generalPrediction.create({
+            userId,
+            inputSymptoms:text,
+            predictedDisease,
+            localName,
+            riskLevel,
+            confidence,
+            recommendations
+        })
+
+        /**
+         * @description return result to frontend
+         */
+        res.status(200).json(AI_response.data)
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({
+            message:"Server error in general disease prediction"
+        })
     }
-
-    const AI_response = await axios.post(
-      mlServer + "/predict-general",
-      { text }
-    );
-
-    const {
-      predictedDisease,
-      riskLevel,
-      localName,
-      confidence,
-      recommendations
-    } = AI_response.data;
-
-    await generalPrediction.create({
-      userId,
-      inputSymptoms: text,
-      predictedDisease,
-      localName,
-      riskLevel,
-      confidence,
-      recommendations
-    });
-
-    res.status(200).json(AI_response.data);
-
-  } catch (error) {
-
-    console.error(
-      "General disease prediction error:",
-      error.response?.data || error.message
-    );
-
-    res.status(500).json({
-      message: error.response?.data || error.message
-    });
-  }
-};
+}
 
 /**
  * @desc Predict heart disease risk (Test mode, no auth)
