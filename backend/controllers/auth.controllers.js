@@ -84,10 +84,10 @@ export const registration = async (req, res) => {
     /**
      * @description To save token in cookie storage
      */
-   res.cookie("token", token, {
+  res.cookie("token", token, {
   httpOnly: true,
+  sameSite: "None",
   secure: true,
-  sameSite: "none",
 });
 
     res.status(201).json({
