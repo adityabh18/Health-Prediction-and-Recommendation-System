@@ -8,45 +8,44 @@ const mlServer="https://health-prediction-and-recommendation-35bk.onrender.com"
  * @route POST /api/general-desease
  * @access Public
  */
-export const predictGeneralDesease=async (req,res)=>{
-    try {
-        const userId = req.user.id;
-        const { text } = req.body;
-        
-        if(!text||text.length<10){
-           return res.status(400).json({
-            message:"Please enter at least 10 charactes"
-           })
-        }
+export const predictGeneralDesease = async (req, res) => {
+  try {
 
-        /**
-         * @description API call to ML server
-         */
+    const userId = req.user?.id || null;
+    const { text } = req.body;
 
-        const AI_response=await axios.post(mlServer+"/predict-general",
-            {text}
-        );
+    if (!text || text.length < 10) {
+      return res.status(400).json({
+        message: "Please enter at least 10 characters"
+      });
+    }
 
-        const {predictedDisease,riskLevel,localName,confidence,recommendations}=AI_response.data
+    const AI_response = await axios.post(
+      mlServer + "/predict-general",
+      { text }
+    );
 
-        /**
-         * @description to save data in mongoodb
-         */
-        const result=await generalPrediction.create({
-            userId,
-            inputSymptoms:text,
-            predictedDisease,
-            localName,
-            riskLevel,
-            confidence,
-            recommendations
-        })
+    const {
+      predictedDisease,
+      riskLevel,
+      localName,
+      confidence,
+      recommendations
+    } = AI_response.data;
 
-        /**
-         * @description return result to frontend
-         */
-        res.status(200).json(AI_response.data)
-    }} catch (error) {
+    await generalPrediction.create({
+      userId,
+      inputSymptoms: text,
+      predictedDisease,
+      localName,
+      riskLevel,
+      confidence,
+      recommendations
+    });
+
+    res.status(200).json(AI_response.data);
+
+  } catch (error) {
 
     console.error(
       "General disease prediction error:",
@@ -56,8 +55,8 @@ export const predictGeneralDesease=async (req,res)=>{
     res.status(500).json({
       message: error.response?.data || error.message
     });
-}
-}
+  }
+};
 
 /**
  * @desc Predict heart disease risk (Test mode, no auth)
