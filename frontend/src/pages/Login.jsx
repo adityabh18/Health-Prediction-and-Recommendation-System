@@ -62,15 +62,19 @@ function Login() {
       console.log(result.data);
       toast.success("Login successful 🎉");
 
-      await getCurrentUser();
+setTimeout(async () => {
 
-      const user = result.data.user;
+  await getCurrentUser();
 
-      if (user.role === "doctor") {
-        navigate("/doctor-dashboard");
-      } else {
-        navigate("/user-dashboard");
-      }
+  const user = result.data.user;
+
+  if (user.role === "doctor") {
+    navigate("/doctor-dashboard");
+  } else {
+    navigate("/user-dashboard");
+  }
+
+}, 1000);
     } catch (error) {
       console.log(error);
       const msg = error?.response?.data?.message;
