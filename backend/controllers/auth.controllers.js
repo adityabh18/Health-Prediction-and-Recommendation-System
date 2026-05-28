@@ -223,7 +223,7 @@ export const googleLogin = async (req, res) => {
       { expiresIn: "1d" },
     );
 
-   res.cookie("token", token, {
+  res.cookie("token", token, {
   httpOnly: true,
   secure: true,
   sameSite: "none",
