@@ -1,7 +1,7 @@
 import axios from "axios"
 import {diabetesPrediction, generalPrediction, heartDiseasePrediction, kidneyPrediction } from "../models/disease.models.js";
 
-const mlServer="https://health-prediction-and-recommendation-35bk.onrender.com";
+const mlServer="https://health-prediction-and-recommendation-35bk.onrender.com
 
 /**
  * @desc Predict general disease based on user symptoms
