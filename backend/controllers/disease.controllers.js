@@ -10,7 +10,7 @@ const mlServer="https://health-prediction-and-recommendation-35bk.onrender.com"
  */
 export const predictGeneralDesease=async (req,res)=>{
     try {
-        const userId = req.user.id;
+        const userId = req.user?.id || null;
         const { text } = req.body;
         
         if(!text||text.length<10){
@@ -62,7 +62,7 @@ export const predictGeneralDesease=async (req,res)=>{
 export const predictHeartDisease = async (req, res) => {
 
   try {
-    const userId = req.user.id;
+    const userId = req.user?.id || null;
     const {
       Sex,
       AgeCategory,
@@ -181,7 +181,7 @@ export const predictHeartDisease = async (req, res) => {
  */
 export const predictDiabetesDisease = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = req.user?.id || null;
     const {
       HighBP,
       HighChol,
@@ -288,7 +288,7 @@ export const predictDiabetesDisease = async (req, res) => {
  */
 export const predictKidneyDisease = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = req.user?.id || null;
     let {
       age,
       bp,
