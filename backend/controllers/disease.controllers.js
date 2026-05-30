@@ -6,7 +6,7 @@ import {
   kidneyPrediction,
 } from "../models/disease.models.js";
 
-const mlServer = "http://127.0.0.1:5000";
+const mlServer = "https://health-prediction-and-recommendation-35bk.onrender.com";
 
 /**
  * @desc Predict general disease based on user symptoms
