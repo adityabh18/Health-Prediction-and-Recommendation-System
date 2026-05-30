@@ -1,7 +1,5 @@
 @import "tailwindcss";
 
-/* Google Font */
-
 body{
   font-family: 'sans-serif';
 }
@@ -50,7 +48,7 @@ html, body {
   -webkit-mask-composite: xor;
   mask-composite: exclude;
 
-  pointer-events: none;   /* ⭐ hover fix */
+  pointer-events: none;
 }
 
 @keyframes borderMove{
